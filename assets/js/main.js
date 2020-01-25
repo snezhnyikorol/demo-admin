@@ -8,7 +8,6 @@ $('.add-quiz').click(function (event) {
 });
 
 function openEditor(id) {
-    console.log(id);
     if (id === undefined) {
         $('#table').fadeToggle("fast", ()=> $('#editor').fadeToggle("fast"));
     } else {
@@ -16,11 +15,7 @@ function openEditor(id) {
     }
 }
 
-$('tr').filter((function(index, element) {
-    if (index !== 0) {
-        return element
-    }
-})).click(function(event) {
+$('tbody tr').click(function(event) {
     if (!($(event.target).hasClass('delete')||$(event.target).parent().hasClass('delete'))) {
         openEditor($(this).find('th').text())
     }
