@@ -132,7 +132,7 @@ $tree.tree({
         // Append a link to the jqtree-element div.
         // The link has an url '#node-[id]' and a data property 'node-id'.
         $li.find('.jqtree-element .jqtree-title').prepend(
-          '<a href="#node-'+ node.id +'" class="edit" data-node-id="'+ node.id +'"><img class="edit__img" src="./assets/img/file.svg" alt=""></a>'
+          '<a href="" class="edit" data-node-id="'+ node.id +'"><img class="edit__img" src="./assets/img/file.svg" alt=""></a>'
         );
 
     }
