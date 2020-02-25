@@ -10,8 +10,12 @@ $('.add-quiz').click(function (event) {
 function openEditor(id) {
     if (id === undefined) {
         $('#table').fadeToggle("fast", ()=> $('#editor').fadeToggle("fast"));
+        toggleSidebar();
+        $('.menu').show();
     } else {
         $('#table').fadeToggle("fast", ()=> $('#editor').fadeToggle("fast"));
+        toggleSidebar();
+        $('.menu').show(400);
     }
 }
 
@@ -23,87 +27,32 @@ $('tbody tr').click(function(event) {
 
 let sidebarHidden = true;
 
-$('.menu').click(function () {
+function toggleSidebar() {
     if (sidebarHidden) {
-        $('.sidebar').css({'left': '0'});
+        $('.sidebar').css({
+            'left': '0',
+        });
+        $('.page__wrapper').css({
+            'width': 'calc(100% - 300px)'
+        });
         sidebarHidden = false;
     } else {
-        $('.sidebar').css({'left': '-500px'});
+        $('.sidebar').css({
+            'left': '-300px',
+        });
+        $('.page__wrapper').css({
+            'width': '100%'
+        });
         sidebarHidden = true;
     }
-});
+}
+
+$('.menu').click(toggleSidebar);
 
 $('.sidebar__collapse').click(function () {
     $(this).parent().find('.sidebar__container').slideToggle(100);
 });
 
-
-
-//
-// let currentDroppable = null;
-//
-// let items = document.querySelectorAll('.sidebar__item');
-// [].forEach.call(items, function(item) {
-//     item.addEventListener('dragstart', function(event) {
-//         event.preventDefault();
-//     });
-//
-//     item.addEventListener('mousedown', function(event) {
-//
-//         let shiftX = event.clientX - event.currentTarget.getBoundingClientRect().left;
-//         let shiftY = event.clientY - event.currentTarget.getBoundingClientRect().top;
-//
-//         event.currentTarget.style.position = 'absolute';
-//         event.currentTarget.style.zIndex = 1000;
-//         document.body.append(event.currentTarget);
-//
-//         moveAt(event.pageX, event.pageY);
-//
-//         function moveAt(pageX, pageY) {
-//             event.currentTarget.style.left = pageX - shiftX + 'px';
-//             event.currentTarget.style.top = pageY - shiftY + 'px';
-//         }
-//
-//         function onMouseMove(event) {
-//             moveAt(event.pageX, event.pageY);
-//
-//             event.currentTarget.hidden = true;
-//             let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
-//             event.currentTarget.hidden = false;
-//
-//             if (!elemBelow) return;
-//
-//             let droppableBelow = elemBelow.closest('.droppable');
-//             if (currentDroppable != droppableBelow) {
-//                 if (currentDroppable) { // null when we were not over a droppable before this event
-//                     leaveDroppable(currentDroppable);
-//                 }
-//                 currentDroppable = droppableBelow;
-//                 if (currentDroppable) { // null if we're not coming over a droppable now
-//                     // (maybe just left the droppable)
-//                     enterDroppable(currentDroppable);
-//                 }
-//             }
-//         }
-//
-//         document.addEventListener('mousemove', onMouseMove);
-//
-//         event.currentTarget.onmouseup = function() {
-//             document.removeEventListener('mousemove', onMouseMove);
-//             event.currentTarget.onmouseup = null;
-//         };
-//
-//     })
-// });
-//
-//
-// function enterDroppable(elem) {
-//     elem.style.background = 'pink';
-// }
-//
-// function leaveDroppable(elem) {
-//     elem.style.background = '';
-// }
 var $tree = $('#tree1');
 
 let lastId = 5;

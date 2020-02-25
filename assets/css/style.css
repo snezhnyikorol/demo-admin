@@ -63,11 +63,12 @@ tbody tr {
 
 .menu {
     height: 24px;
-    position: absolute;
+    position: fixed;
     cursor: pointer;
     top: 8px;
     left: 16px;
     z-index: 10;
+    display: none;
 }
 
 .menu__img {
@@ -76,16 +77,22 @@ tbody tr {
 
 .sidebar {
     width: 300px;
+    overflow: hidden;
     height: 100vh;
     padding-top: 50px;
     box-shadow: 0 0 5px 1px rgba(0,0,0,0.4);
     background-color: #ffffff;
-    position: absolute;
+    position: fixed;
+    padding-left: 20px;
     top: 0;
     z-index: 9;
-    left: -500px;
+    left: -300px;
     transition: left 600ms;
-    padding-left: 20px;
+}
+
+.page__wrapper {
+    width: 100%;
+    transition: width 600ms;
 }
 
 .edit__img {
