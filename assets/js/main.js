@@ -124,3 +124,12 @@ $('.edit__img').hover(function () {
       $(this).attr('src', './assets/img/file.svg');
   });
 
+// $('#form').submit(function (e) {
+//     e.preventDefault();
+//     if (!sidebarHidden) {
+//         toggleSidebar();
+//         $('.menu').hide(400);
+//         /*submit actions */
+//     }
+// });
+
