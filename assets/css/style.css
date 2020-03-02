@@ -95,7 +95,7 @@ tbody tr {
     transition: width 600ms;
 }
 
-.edit__img {
+.add-sub__img {
     width: 17px;
     margin-right: 5px;
 }
@@ -106,4 +106,9 @@ tbody tr {
     right: 16px;
     width: 24px;
     cursor: pointer;
+}
+
+.edit__img {
+    width: 17px;
+    margin-left: 3px;
 }
