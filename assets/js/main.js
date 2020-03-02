@@ -2,6 +2,7 @@ let idCount = 0;
 let pageData;
 let $tree = $('#tree');
 let treeData;
+let $root = $('html, body');
 
 $('.delete').click(function (event) {
     console.log($(this).parent().find('th').text());
@@ -92,37 +93,21 @@ function renderTree(treeSource) {
     });
 }
 
+$('#tree1').on(
+  'tree.click',
+  function(event) {
+      // The clicked node is 'event.node'
+      var node = event.node;
+      alert(node.name);
+  }
+);
 
-$tree.on( 'click', '.add-sub',function(e) {
-    // Get the id from the 'node-id' data property
-    let node_id;
-    if ($(e.target).hasClass('add-sub__img')) {
-        node_id = $(e.target).parent().data('node-id');
-    } else {
-        node_id = $(e.target).data('node-id');
-    }
 
-    // Get the node from the tree
-    let node = $tree.tree('getNodeById', node_id);
-    $tree.tree('appendNode', {
-        id: idCount++,
-        name: 'newnode' + idCount
-    },
-      node);
-    if ($tree.tree('getState').open_nodes.indexOf(node.id) == -1) {
-        $tree.tree('openNode', node);
-    }
-});
 
 $tree.on('tree.refresh', function (e) {
     treeData = JSON.parse($tree.tree('toJson'))[0];
     update(treeData);
-    $('.add-sub__img').hover(function () {
-          $(this).attr('src', './assets/img/add.svg');
-      },
-      function () {
-          $(this).attr('src', './assets/img/file.svg');
-      });
+
 });
 
 $('.add-sub__img').hover(function () {
@@ -180,7 +165,7 @@ function renderQuestion(questionData) {
     if (questionData.hasOwnProperty('elements')) {
         let temp = (`
         <div>
-            <div class="question__item my-3">
+            <div class="question__item my-3" id="question${questionData.id}">
                 <div class="custom-control custom-checkbox enable">
                     <input type="checkbox" name="enabledQuestion" class="custom-control-input" id="enable1" value="1">
                     <label class="custom-control-label" for="enable1"></label>
@@ -219,7 +204,7 @@ function renderQuestion(questionData) {
     }
     return (`
         <div>
-            <div class="question__item my-3">
+            <div class="question__item my-3" id="question${questionData.id}">
                 <div class="custom-control custom-checkbox enable">
                     <input type="checkbox" name="enabledQuestion" class="custom-control-input" id="enable1" value="1">
                     <label class="custom-control-label" for="enable1"></label>
@@ -374,7 +359,54 @@ function update(res) {
         );
     });
 
+
+
+    $('.add-sub__img').hover(function () {
+          $(this).attr('src', './assets/img/add.svg');
+      },
+      function () {
+          $(this).attr('src', './assets/img/file.svg');
+      });
+    $tree.on(
+      'tree.click',
+      function(event) {
+          let node = event.node;
+          if (node.type == 'category') {
+              $root.animate({
+                  scrollTop: $( `#category${node.id}` ).offset().top - 100
+              }, 500);
+          } else if (node.type == 'question') {
+              $root.animate({
+                  scrollTop: $( `#question${node.id}` ).offset().top - 100
+              }, 500);
+          }
+
+      }
+    );
+
 }
+
+$tree.on( 'click', '.add-sub',function(e) {
+    // Get the id from the 'node-id' data property
+    let node_id;
+    if ($(e.target).hasClass('add-sub__img')) {
+        node_id = $(e.target).parent().data('node-id');
+    } else {
+        node_id = $(e.target).data('node-id');
+    }
+
+    // Get the node from the tree
+    let node = $tree.tree('getNodeById', node_id);
+    $tree.tree('appendNode', {
+          id: idCount++,
+          name: 'newnode' + idCount,
+        type: "category"
+      },
+      node);
+    if ($tree.tree('getState').open_nodes.indexOf(node.id) == -1) {
+        $tree.tree('openNode', node);
+    }
+});
 
 function updateTitle(id, title) {
     let node = $tree.tree('getNodeById', id);
