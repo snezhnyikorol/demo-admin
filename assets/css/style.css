@@ -75,7 +75,7 @@ tbody tr {
     height: 100%;
 }
 
-.sidebar {
+.sidebar, .sidebar_menu {
     width: 300px;
     overflow: hidden;
     height: 100vh;
