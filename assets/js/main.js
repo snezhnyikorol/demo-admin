@@ -10,43 +10,63 @@ let $root = $('html, body');
 toggleMenuSidebar();
 
 $('.delete').click(function (event) {
-    console.log($(this).parent().find('th').text());
     $('#deleteModal').modal('show');
+    let id = $(this).parent().data('id');
+    $('#deleteModal').find("[name='id']").val(id);
+});
+
+$("#deleteForm").submit(function (event) {
+  event.preventDefault();
+  $(`tbody tr[data-id='${this.id.value}']`).remove();
+  $('#deleteModal').modal('hide');
 });
 
 $('.add-quiz').click(function (event) {
     event.preventDefault();
-    openEditor();
+    $('#createModal').modal('show');
+    $("#createForm [name='id']").val(`f${(+new Date).toString(16)}`);
 });
 
-function openEditor(id) {
-    if (id === undefined) {
-        $('#table').fadeToggle("fast", ()=> $('#editor').fadeToggle("fast"));
-        toggleSidebar();
-        toggleMenuSidebar();
-        $('.menu').show(400);
-    } else if(id == 1) {
-        pageData = fetch('./assets/data.json')
-          .then(responce => responce.json())
-          .then((res) => {
-              render(res);
-          })
-          .catch(error => console.error(error));
-        $('#table').fadeToggle("fast", ()=> $('#editor').fadeToggle("fast"));
-        toggleSidebar();
-        toggleMenuSidebar();
-        $('.menu').show(400);
-    } else {
-        $('#table').fadeToggle("fast", ()=> $('#editor').fadeToggle("fast"));
-        toggleSidebar();
-        toggleMenuSidebar();
-        $('.menu').show(400);
-    }
+$("#createForm").submit(function (event) {
+  event.preventDefault();
+  let data = {};
+  data = {
+    name: this.title.value,
+    id: this.id.value,
+    type: 'profile'
+  };
+  $('#createModal').modal('hide');
+  openEditor();
+  render(data);
+});
+
+function getProfile(id) {
+  pageData = fetch('./assets/data.json')
+    .then(responce => responce.json())
+    .then((res) => {
+      openEditor();
+      render(res[id]);
+    })
+    .catch(error => console.error(error));
+}
+
+function openEditor() {
+  $('#table').fadeToggle("fast", ()=> $('#editor').fadeToggle("fast"));
+  toggleSidebar();
+  toggleMenuSidebar();
+  $('.menu').show(400);
+
+    // else {
+    //     $('#table').fadeToggle("fast", ()=> $('#editor').fadeToggle("fast"));
+    //     toggleSidebar();
+    //     toggleMenuSidebar();
+    //     $('.menu').show(400);
+    // }
 }
 
 $('tbody tr').click(function(event) {
     if (!($(event.target).hasClass('delete')||$(event.target).parent().hasClass('delete'))) {
-        openEditor($(this).find('th').text())
+        getProfile($(this).data('id'));
     }
 });
 
@@ -207,7 +227,7 @@ function renderSection(categoryData) {
 
 function renderQuestion(questionData) {
   $('#section-container').append(`
-        <div>
+
             <div class="question__item my-3" id="question${questionData.id}">
                 <div class="custom-control custom-checkbox enable">
                     <input type="checkbox" name="enabledQuestion" class="custom-control-input" id="enable${questionData.id}" value="1">
@@ -230,14 +250,14 @@ function renderQuestion(questionData) {
                             <option value="8">File</option>
                         </select>            
                     </div>
-                    <div class="remove">-</div>
+                    <div class="remove" onclick="removeQuestion('${questionData.id}')">-</div>
                 </div>  
                 <div class="question__body mt-2 d-flex flex-column justify-content-center" id="question-container${questionData.id}">
                     <h5>Elements</h5>
 
                 </div>
             </div>  
-        </div>    
+  
     `);
   if (questionData.hasOwnProperty('inputType')) {
     $(`#question${questionData.id}`).find(`select[name="type"] option[value=${questionData.inputType}]`).attr('selected', 'selected');
@@ -250,13 +270,14 @@ function renderQuestion(questionData) {
   $('.add-item').click(function (event) {
     event.preventDefault();
     let id = $(this).data('id');
+    let itemId = `f${(+new Date).toString(16)}`;
     let node = $tree.tree('getNodeById', id);
     if (node.hasOwnProperty('elements')) {
       let elements = node.elements;
       elements.push(            {
         text: "",
         value: "",
-        id: `f${(+new Date).toString(16)}`
+        id: itemId
       });
       $tree.tree(
         'updateNode',
@@ -273,20 +294,20 @@ function renderQuestion(questionData) {
           elements: [{
             text: "",
             value: "",
-            id: `f${(+new Date).toString(16)}`
+            id: itemId
           }]
         },
       )
     }
     $(this).before(`
-        <div class="question__element my-1 form-row">
+        <div class="question__element my-1 form-row" id="${itemId}">
             <div class="col-9">
                 <input type="text" name="elText" class="form-control" placeholder="Text" value="">
             </div>
             <div class="col-3">
                 <input type="text" name="elValue" class="form-control" placeholder="Value" value="">
             </div>
-            <div class="remove">-</div>
+            <div class="remove" onclick="removeElement(${itemId})">-</div>
         </div>    
     `);
   });
@@ -294,14 +315,14 @@ function renderQuestion(questionData) {
 
 function renderElement(elementData, parentId) {
     $(`#question-container${parentId}`).append(`
-        <div class="question__element my-1 form-row">
+        <div class="question__element my-1 form-row" id="${elementData.id}">
             <div class="col-9">
                 <input type="text" name="elText" class="form-control" placeholder="Text" value="${elementData.text}">
             </div>
             <div class="col-3">
                 <input type="text" name="elValue" class="form-control" placeholder="Value" value="${elementData.value}">
             </div>
-            <div class="remove">-</div>
+            <div class="remove" onclick="removeElement(${elementData.id})">-</div>
         </div>    
     `);
 }
@@ -363,6 +384,7 @@ function updateTitle(id, title) {
           name: title,
       }
     );
+    $(`#category${id} h3`).text(title);
 }
 
 $tree.on(
@@ -404,8 +426,16 @@ function processMoveTo(movedNode, targetNode, position) {
 }
   // function
 
+function removeElement(id) {
+  // console.log(id);
+  // $('#'+id).remove();
+  $(id).remove();
+}
 
-
+function removeQuestion(id) {
+  console.log(id);
+  $('#question'+id).remove();
+}
 
 
 
